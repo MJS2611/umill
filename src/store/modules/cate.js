@@ -6,7 +6,7 @@ const state = {
 const mutations = {
     changeList(state,arr){
         state.list = arr
-        console.log(state.list)
+        // console.log(state.list)
     }
 }
 

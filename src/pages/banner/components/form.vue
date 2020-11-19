@@ -1,8 +1,8 @@
 <template>
   <div class="add">
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="form">
-        <el-form-item label="标题" label-width="120px">
+      <el-form :model="form" :rules="rules">
+        <el-form-item label="标题" label-width="120px" prop="title">
           <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图片" label-width="120px">
@@ -37,6 +37,11 @@ export default {
   props: ["info"],
   data() {
     return {
+      rules: {
+        title: [
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+        ],
+      },
       form: {
         title: "",
         img: null,

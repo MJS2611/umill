@@ -37,6 +37,7 @@ export default {
   props: ["info"],
   data() {
     return {
+      
       user: {
         specsname: "",
         attrs: "",

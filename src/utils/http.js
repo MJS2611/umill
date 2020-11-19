@@ -470,5 +470,54 @@ export const reqGoodsCount = () => {
     })
 }
 
+// 秒杀活动
+export const reqSeckAdd = (seck) => {
+    return axios({
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data: qs.stringify(seck)
+    })
+}
+
+// 列表
+export const reqSeckList = () => {
+    return axios({
+        url: baseUrl + "/api/secklist",
+        method: "get"
+    })
+}
+
+//删除
+export const reqSeckDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+
+// .详情
+export const reqSeckDetail = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckinfo",
+        method: "get",
+        params: {
+            id: id
+        }
+    })
+}
+
+// 修改
+export const reqSeckUpdate = (seck) => {
+    return axios({
+        url: baseUrl + "/api/seckedit",
+        method: "post",
+        data: qs.stringify(seck)
+    })
+}
+
+
 
 

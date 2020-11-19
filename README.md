@@ -1,6 +1,6 @@
 # umall
 
-> A Vue.js project
+> 验证没写
 
 ## Build Setup
 
