@@ -32,15 +32,17 @@
 import path from "path";
 import { mapGetters, mapActions } from "vuex";
 import { successAlert, errorAlert } from "../../../utils/alert";
-import { reqBannerAdd, reqBannerDetail, reqBannerUpdate } from "../../../utils/http";
+import {
+  reqBannerAdd,
+  reqBannerDetail,
+  reqBannerUpdate,
+} from "../../../utils/http";
 export default {
   props: ["info"],
   data() {
     return {
       rules: {
-        title: [
-          { required: true, message: "请输入商品名称", trigger: "blur" },
-        ],
+        title: [{ required: true, message: "请输入商品名称", trigger: "blur" }],
       },
       form: {
         title: "",
@@ -76,7 +78,7 @@ export default {
     },
     empty() {
       this.form = {
-        title:"",
+        title: "",
         img: null,
         status: 1,
       };
@@ -85,14 +87,30 @@ export default {
     cancel() {
       this.info.isshow = false;
     },
-    add() {
-      reqBannerAdd(this.form).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("添加成功");
-          this.empty();
-          this.cancel();
-          this.reqList();
+    check() {
+      return new Promise((resolve, reject) => {
+        //验证
+        if (this.form.title === "") {
+          errorAlert("标题不能为空");
+          return;
         }
+        if (!this.form.img) {
+          errorAlert("请选择图片");
+          return;
+        }
+        resolve();
+      });
+    },
+    add() {
+      this.check().then(() => {
+        reqBannerAdd(this.form).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("添加成功");
+            this.empty();
+            this.cancel();
+            this.reqList();
+          }
+        });
       });
     },
     getOne(id) {
@@ -102,21 +120,23 @@ export default {
         this.form.id = id;
       });
     },
-    update(){
-        reqBannerUpdate(this.form).then(res=>{
-           if(res.data.code==200){
-               successAlert("修改成功");
-               this.cancel();
-               this.empty();
-               this.reqList();
-           }
-        })
+    update() {
+      this.check().then(() => {
+        reqBannerUpdate(this.form).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("修改成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
+      });
     },
-    closed(){
-        if(this.info.title=="编辑轮播图"){
-            this.empty()
-        }
-    }
+    closed() {
+      if (this.info.title == "编辑轮播图") {
+        this.empty();
+      }
+    },
   },
   mounted() {},
 };
@@ -163,7 +183,7 @@ export default {
   overflow: hidden;
 }
 .avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
 }
 .avatar-uploader-icon {
   font-size: 28px;

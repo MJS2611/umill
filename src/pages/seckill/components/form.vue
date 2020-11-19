@@ -79,7 +79,6 @@ export default {
     return {
       rules: {
         title: [{ required: true, message: "请输入商品名称", trigger: "blur" }],
-        // value: [{type:'date',required:true,message:'请输入时间',trigger:'change'}],
         first_cateid: [
           { required: true, message: "请选择一级分类", trigger: "change" },
         ],
@@ -87,7 +86,6 @@ export default {
           { required: true, message: "请选择二级分类", trigger: "change" },
         ],
         goodsid: [{ required: true, message: "请选择商品", trigger: "change" }],
-       
       },
       user: {
         title: "",
@@ -169,7 +167,7 @@ export default {
           errorAlert("请选择二级分类");
           return;
         }
-        
+
         if (this.user.goodsid === "") {
           errorAlert("商品不能为空");
           return;
@@ -203,13 +201,15 @@ export default {
       });
     },
     update() {
-      reqSeckUpdate(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("修改成功");
-          this.cancel();
-          this.empty();
-          this.reqSeckList();
-        }
+      this.check().then((res) => {
+        reqSeckUpdate(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("修改成功");
+            this.cancel();
+            this.empty();
+            this.reqSeckList();
+          }
+        });
       });
     },
     closed() {

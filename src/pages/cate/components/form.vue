@@ -1,8 +1,8 @@
 <template>
   <div class="add">
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="form">
-        <el-form-item label="上级分类" label-width="120px">
+      <el-form :model="form" :rules="rules">
+        <el-form-item label="上级分类" label-width="120px" prop="pid">
           <el-select v-model="form.pid" placeholder="请选择">
             <el-option :value="0" label="顶级分类"></el-option>
             <el-option
@@ -13,7 +13,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="分类名称" label-width="120px">
+        <el-form-item label="分类名称" label-width="120px" prop="catename">
           <el-input v-model="form.catename" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图片" label-width="120px" v-if="form.pid!==0">
@@ -55,6 +55,12 @@ export default {
         status: 1,
       },
       imgUrl: "",
+      rules: {
+        pid: [{ required: true, message: "请选择上级分类", trigger: "change" }],
+        catename: [
+          { required: true, message: "请输入分类名称", trigger: "blur" },
+        ],
+      },
     };
   },
   computed: {
@@ -93,14 +99,34 @@ export default {
     cancel() {
       this.info.isshow = false;
     },
-    add() {
-      reqCateAdd(this.form).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("添加成功");
-          this.empty();
-          this.cancel();
-          this.reqList();
+    check() {
+      return new Promise((resolve, reject) => {
+        //验证
+        if (this.form.pid === "") {
+          errorAlert("请选择上级分类");
+          return;
         }
+        if (this.form.catename === "") {
+          errorAlert("请输入分类名称");
+          return;
+        }
+        if (!this.form.img) {
+          errorAlert("请选择图片");
+          return;
+        }
+        resolve();
+      });
+    },
+    add() {
+      this.check().then(() => {
+        reqCateAdd(this.form).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("添加成功");
+            this.empty();
+            this.cancel();
+            this.reqList();
+          }
+        });
       });
     },
     getOne(id) {
@@ -110,21 +136,23 @@ export default {
         this.form.id = id;
       });
     },
-    update(){
-        reqCateUpdate(this.form).then(res=>{
-           if(res.data.code==200){
-               successAlert("修改成功");
-               this.cancel();
-               this.empty();
-               this.reqList();
-           }
-        })
+    update() {
+      this.check().then(() => {
+        reqCateUpdate(this.form).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("修改成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
+      });
     },
-    closed(){
-        if(this.info.title=="编辑分类"){
-            this.empty()
-        }
-    }
+    closed() {
+      if (this.info.title == "编辑分类") {
+        this.empty();
+      }
+    },
   },
   mounted() {},
 };
@@ -171,7 +199,7 @@ export default {
   overflow: hidden;
 }
 .avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
 }
 .avatar-uploader-icon {
   font-size: 28px;

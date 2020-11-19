@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
-      <el-form :model="user">
-        <el-form-item label="规格名称" label-width="120px">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="规格名称" label-width="120px" prop="specsname">
           <el-input v-model="user.specsname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="规格属性" label-width="120px" v-for="(item,index) in attrArr" :key="index">
@@ -26,7 +26,7 @@
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { successAlert } from "../../../utils/alert";
+import { successAlert, errorAlert } from "../../../utils/alert";
 import {
   reqSpecsAdd,
   reqSpecsDel,
@@ -37,13 +37,17 @@ export default {
   props: ["info"],
   data() {
     return {
-      
       user: {
         specsname: "",
         attrs: "",
         status: 1,
       },
       attrArr: [{ value: "" }],
+      rules: {
+        specsname: [
+          { required: true, message: "请输入规格名称", trigger: "blur" },
+        ],
+      },
     };
   },
   computed: {
@@ -73,16 +77,29 @@ export default {
     delAttr(index) {
       this.attrArr.splice(index, 1);
     },
-    add() {
-      this.user.attrs = JSON.stringify(this.attrArr.map((item) => item.value));
-      reqSpecsAdd(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("添加成功");
-          this.cancel();
-          this.empty();
-          this.reqList();
-          this.reqCount();
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.specsname === "") {
+          errorAlert("规格名称不能为空");
+          return;
         }
+        resolve();
+      });
+    },
+    add() {
+      this.check().then(() => {
+        this.user.attrs = JSON.stringify(
+          this.attrArr.map((item) => item.value)
+        );
+        reqSpecsAdd(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("添加成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+            this.reqCount();
+          }
+        });
       });
     },
     getOne(id) {
@@ -94,14 +111,18 @@ export default {
       });
     },
     update() {
-      this.user.attrs = JSON.stringify(this.attrArr.map((item) => item.value));
-      reqSpecsUpdate(this.user).then((res) => {
-        if (res.data.code == 200) {
-          successAlert("更新成功");
-          this.cancel();
-          this.empty();
-          this.reqList();
-        }
+      this.check().then(() => {
+        this.user.attrs = JSON.stringify(
+          this.attrArr.map((item) => item.value)
+        );
+        reqSpecsUpdate(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("更新成功");
+            this.cancel();
+            this.empty();
+            this.reqList();
+          }
+        });
       });
     },
     closed() {
